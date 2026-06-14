@@ -127,39 +127,34 @@ The suite runs 5 tests verifying model creation, input validations (e.g. empty s
 
 ---
 
+## 🌐 Deployed Application URLs
+
+- **Backend API (Hugging Face Spaces)**: [https://briju-incident-backend.hf.space](https://briju-incident-backend.hf.space)
+- **Frontend App (Vercel)**: [Insert your deployed Vercel URL here]
+
+---
+
 ## 🌐 Production Deployment Guide
 
-### 1. Database Setup (Supabase / Render Postgres)
-1. Spin up a free PostgreSQL database on **Supabase** or **Render**.
-2. Copy the connection string.
+This project is configured for a completely free hosting stack (no credit card required) using **Hugging Face Spaces** for the backend container and **Vercel** for the frontend client.
 
-### 2. Backend Deployment (Render / Railway)
-1. Create a new **Web Service** on Render connected to your GitHub repository.
-2. Select environment: **Python**.
-3. Set the directory path root to `backend/`.
-4. Configure Build Command:
-   ```bash
-   pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-   ```
-5. Configure Start Command:
-   ```bash
-   gunicorn incident_project.wsgi:application
-   ```
-6. Under Environment Variables, add:
-   - `SECRET_KEY`: *[Insert secure string]*
-   - `DEBUG`: `False`
-   - `ALLOWED_HOSTS`: `*` (or your Render URL)
-   - `DATABASE_URL`: *[Insert your database connection string]*
-   - `GROQ_API_KEY`: *[Insert your Groq API key]*
+### 1. Backend Deployment (Hugging Face Spaces)
+1. Create a new Space on Hugging Face:
+   - **SDK**: Select `Docker` (using a blank template).
+   - **Visibility**: Public (so the Vercel frontend can call the API).
+2. Push your code to the Hugging Face Space git repository. The repository contains a root [Dockerfile](file:///C:/Users/Brija/.gemini/antigravity/scratch/restaurant-incident-reporting/Dockerfile) and Hugging Face metadata headers in this README, which automates the build.
+3. In the Space **Settings** page:
+   - Under **Variables and secrets**, add a new Secret with Key: `GROQ_API_KEY` and Value: *[Your Groq API Key]*.
+   - Django runs on SQLite inside the Docker container by default. If you prefer persistent cloud storage, you can add a `DATABASE_URL` environment variable linking to a free PostgreSQL database (e.g. Supabase).
 
-### 3. Frontend Deployment (Vercel / Netlify)
-1. Create a new **Static Site** on Vercel/Netlify.
-2. Point it to your repository and set the root directory to `frontend/`.
-3. Configure Build settings:
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
-4. Set Environment Variables:
-   - `VITE_API_URL`: *[URL of your deployed backend, e.g. `https://your-backend-app.onrender.com`]*
+### 2. Frontend Deployment (Vercel)
+1. Create a new Project on Vercel and import your GitHub repository.
+2. Configure the project settings:
+   - **Root Directory**: Select `frontend/`.
+   - **Framework Preset**: `Vite` (automatically detected).
+3. Expand **Environment Variables** and add:
+   - `VITE_API_URL`: `https://briju-incident-backend.hf.space` (your direct Space domain).
+4. Click **Deploy**.
 
 ---
 
