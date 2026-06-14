@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 from .models import Incident
 from .serializers import IncidentSerializer
-from .gemini_helper import analyze_incident_description, generate_incident_summary
+from .groq_helper import analyze_incident_description, generate_incident_summary
 
 class IncidentViewSet(viewsets.ModelViewSet):
     queryset = Incident.objects.all()

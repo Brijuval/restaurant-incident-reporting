@@ -2,7 +2,7 @@
 
 CrispyBites Ops is a modern, high-fidelity, web-based Incident Reporting Tool designed for store staff to log operational issues (POS failures, food shortages, customer complaints) and managers/admins to triage, review, and resolve them.
 
-The application features **AI-Assisted Operations** powered by Google's **Gemini AI**, which dynamically categorizes issues, gauges severity, provides instant staff remediation steps, and generates executive summaries and long-term action plans for managers.
+The application features **AI-Assisted Operations** powered by the **Groq API** (Llama 3.1), which dynamically categorizes issues, gauges severity, provides instant staff remediation steps, and generates executive summaries and long-term action plans for managers.
 
 ---
 
@@ -10,19 +10,19 @@ The application features **AI-Assisted Operations** powered by Google's **Gemini
 
 ### 1. Staff Incident Submission Form
 - Sleek, single-page interface with responsive layout and micro-animations.
-- **Gemini AI Auto-Fill**: Real-time analysis of incident descriptions to suggest the appropriate Category and Severity, reducing staff entry friction.
+- **Groq AI Auto-Fill**: Real-time analysis of incident descriptions to suggest the appropriate Category and Severity, reducing staff entry friction.
 - Immediate action suggestions (e.g., "AI Suggestion: Switch to paper ordering tickets and reboot Lane 1 POS").
 
 ### 2. Manager & Administrator Dashboard
 - **Operations Analytics**: Real-time KPI counters tracking total, pending, resolved, and critical incidents.
 - **Robust Searching & Filtering**: Filter list by category, severity level, or ticket status, combined with text search (for Title, Location, and Details).
-- **Gemini Triage panel**: Interactive sidebar details panel featuring:
+- **Groq Triage panel**: Interactive sidebar details panel featuring:
   - An AI-generated **Executive Summary** (1-2 sentences) of the incident.
   - An AI-proposed **Manager Action Plan** (preventative long-term steps).
 - **Resolution Operations**: Managers can update ticket status (`Open` ➡️ `In Progress` ➡️ `Resolved`) and log operational notes.
 
 ### 3. Graceful Fallback System
-- **No API Keys Required to run**: If the `GEMINI_API_KEY` is not provided (or the API fails), the application automatically engages a local **Rule-Based NLP Keyword Classifier** to determine categories/severities and action recommendations, preventing app crashes.
+- **No API Keys Required to run**: If the `GROQ_API_KEY` is not provided (or the API request fails), the application automatically engages a local **Rule-Based NLP Keyword Classifier** utilizing boundary-checked regular expressions to determine categories/severities and action recommendations, preventing app crashes.
 
 ---
 
@@ -33,7 +33,7 @@ The application features **AI-Assisted Operations** powered by Google's **Gemini
   - Iconography: Lucide React.
 - **Backend**: Python + Django + Django REST Framework (DRF)
   - Database: **SQLite** (local development, default) / **PostgreSQL** (production, dynamic fallback).
-  - AI Triage: **Google Gemini API** (`google-generativeai`).
+  - AI Triage: **Groq API** (Llama 3.1) via standard HTTP REST requests.
   - Production WSGI: `gunicorn` + `whitenoise` (efficient static file delivery).
 
 ---
@@ -55,6 +55,7 @@ restaurant-incident-reporting/
 │   │   └── main.jsx
 │   └── package.json          # React dependencies
 ├── package.json              # Root package.json for concurrently running dev servers
+├── render.yaml               # Render Blueprint one-click deployment spec
 ├── .gitignore
 └── README.md
 ```
@@ -75,7 +76,7 @@ restaurant-incident-reporting/
 2. Copy the environment template and configure keys if desired:
    ```bash
    cp .env.example .env
-   # Open .env and add your GEMINI_API_KEY for the bonus AI features (optional)
+   # Open .env and add your GROQ_API_KEY for the bonus AI features (optional)
    ```
 3. Initialize the backend virtual environment and install packages:
    ```bash
@@ -140,7 +141,7 @@ The suite runs 5 tests verifying model creation, input validations (e.g. empty s
    - `DEBUG`: `False`
    - `ALLOWED_HOSTS`: `*` (or your Render URL)
    - `DATABASE_URL`: *[Insert your database connection string]*
-   - `GEMINI_API_KEY`: *[Insert your Gemini API key]*
+   - `GROQ_API_KEY`: *[Insert your Groq API key]*
 
 ### 3. Frontend Deployment (Vercel / Netlify)
 1. Create a new **Static Site** on Vercel/Netlify.
@@ -157,4 +158,4 @@ The suite runs 5 tests verifying model creation, input validations (e.g. empty s
 1. **SQLite Default**: Designed to boot with zero config using SQLite locally to ensure evaluators can inspect and verify execution with one command.
 2. **Dynamic DB Switching**: Checks for `DATABASE_URL` in Django settings, switching to PostgreSQL automatically if detected.
 3. **CORS Configuration**: CORS headers are open (`CORS_ALLOW_ALL_ORIGINS = True`) for the api routes to allow multi-tenant setups and seamless local/cloud frontend communication.
-4. **Front-End Fallbacks**: Handles missing API response gracefully and provides keyword matching, preventing form locks if Gemini has server errors.
+4. **Front-End Fallbacks**: Handles missing API response gracefully and provides keyword matching, preventing form locks if Groq has server errors.

@@ -3,32 +3,14 @@ import json
 import logging
 import re
 import requests
-import google.generativeai as genai
 
 logger = logging.getLogger(__name__)
 
-# Configs
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+# Config
 GROQ_KEY = os.environ.get("GROQ_API_KEY")
 
-# Initialize Gemini SDK if API Key is configured
-if GEMINI_KEY:
-    try:
-        genai.configure(api_key=GEMINI_KEY)
-    except Exception as e:
-        logger.error(f"Error configuring Gemini SDK: {e}")
-
-def get_gemini_model():
-    if not GEMINI_KEY:
-        return None
-    try:
-        return genai.GenerativeModel("gemini-1.5-flash")
-    except Exception as e:
-        logger.error(f"Error initializing Gemini model: {e}")
-        return None
-
 def call_groq_api(prompt):
-    """Call the Groq API using requests (OpenAI-compatible REST call)."""
+    """Call the Groq API using OpenAI-compatible Chat Completions endpoint."""
     if not GROQ_KEY:
         return None
     
@@ -38,13 +20,13 @@ def call_groq_api(prompt):
         "Content-Type": "application/json"
     }
     
-    # We use llama-3.1-8b-instant for instant triage/summaries (very fast and cheap/free tier)
+    # We use llama-3.1-8b-instant for instant triage and summaries (very fast and cost-effective)
     payload = {
         "model": "llama-3.1-8b-instant",
         "messages": [
             {
                 "role": "system",
-                "content": "You are a operations triage assistant. You must respond with a raw JSON object matching the requested schema. Do not enclose in markdown blocks (e.g. no ```json)."
+                "content": "You are a helpful restaurant operations assistant. You must respond with a raw JSON object matching the requested schema. Do not enclose in markdown blocks (e.g. no ```json)."
             },
             {
                 "role": "user",
@@ -68,12 +50,11 @@ def call_groq_api(prompt):
         return None
 
 def fallback_analysis(description):
-    """Rule-based fallback for incident analysis when all APIs are offline."""
+    """Rule-based fallback for incident analysis when Groq is offline or key is missing."""
     desc_lower = description.lower()
     
     def matches_any(keywords, text):
         for kw in keywords:
-            # Match whole words only using word boundary \b
             pattern = r'\b' + re.escape(kw) + r'\b'
             if re.search(pattern, text):
                 return True
@@ -118,12 +99,12 @@ def fallback_analysis(description):
         "category": category,
         "severity": severity,
         "suggested_action": action,
-        "explanation": "Derived using local rule-based keyword matching (LLM APIs not configured or request failed)."
+        "explanation": "Derived using local rule-based keyword matching (Groq API key not configured or request failed)."
     }
 
 def analyze_incident_description(description):
     """
-    Analyzes the incident description using either Groq or Gemini (prioritizes Groq if key is present).
+    Analyzes the incident description using the Groq API.
     Returns: Dict containing category, severity, suggested_action, and explanation.
     """
     if not description or not description.strip():
@@ -143,7 +124,6 @@ def analyze_incident_description(description):
     Do not enclose in markdown blocks. Just the raw JSON.
     """
 
-    # 1. Try Groq first
     if GROQ_KEY:
         groq_resp = call_groq_api(prompt)
         if groq_resp:
@@ -153,20 +133,7 @@ def analyze_incident_description(description):
             except Exception as e:
                 logger.error(f"Failed to parse Groq response: {e}")
 
-    # 2. Try Gemini second
-    model = get_gemini_model()
-    if model:
-        try:
-            response = model.generate_content(
-                prompt,
-                generation_config={"response_mime_type": "application/json"}
-            )
-            data = json.loads(response.text)
-            return validate_analysis_result(data, description)
-        except Exception as e:
-            logger.error(f"Gemini analysis failed: {e}")
-
-    # 3. Fall back to local rules
+    # Fall back to local rules
     return fallback_analysis(description)
 
 def validate_analysis_result(data, description):
@@ -183,7 +150,7 @@ def validate_analysis_result(data, description):
 
 def generate_incident_summary(title, description, category, severity, location):
     """
-    Generates a brief summary and action plan using Groq or Gemini.
+    Generates a brief summary and long-term action plan using the Groq API.
     Returns: Tuple of (summary, action_plan)
     """
     prompt = f"""
@@ -205,7 +172,6 @@ def generate_incident_summary(title, description, category, severity, location):
     Do not enclose in markdown blocks. Just the raw JSON.
     """
 
-    # 1. Try Groq
     if GROQ_KEY:
         groq_resp = call_groq_api(prompt)
         if groq_resp:
@@ -215,20 +181,7 @@ def generate_incident_summary(title, description, category, severity, location):
             except Exception as e:
                 logger.error(f"Failed to parse Groq summary response: {e}")
 
-    # 2. Try Gemini
-    model = get_gemini_model()
-    if model:
-        try:
-            response = model.generate_content(
-                prompt,
-                generation_config={"response_mime_type": "application/json"}
-            )
-            data = json.loads(response.text)
-            return data.get("summary", ""), data.get("action_plan", "")
-        except Exception as e:
-            logger.error(f"Gemini summary failed: {e}")
-
-    # 3. Fallback
+    # Fallback
     summary = f"Incident '{title}' ({category}) reported at {location}. Severity: {severity}."
     action_plan = f"- Follow up on: {description[:100]}\n- Review standard operating procedures for {category} incidents."
     return summary, action_plan
