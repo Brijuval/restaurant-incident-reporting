@@ -360,7 +360,7 @@ export default function Dashboard({ backendUrl }) {
               <div className={`${styles.detailSection} ${styles.aiSection}`}>
                 <div className={styles.aiHeader}>
                   <Sparkles size={16} className={styles.aiSpark} />
-                  <h4>Gemini AI Triage Assistant</h4>
+                  <h4>Groq AI Triage Assistant</h4>
                 </div>
                 
                 {selectedIncident.ai_summary ? (
