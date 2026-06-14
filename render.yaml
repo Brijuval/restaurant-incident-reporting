@@ -23,9 +23,8 @@ services:
         sync: false # User configures manually in Render dashboard
 
   # Frontend Static Site (React/Vite)
-  - type: web
+  - type: static
     name: incident-reporting-frontend
-    env: static
     buildCommand: "npm install && npm run build"
     publishDir: dist
     rootDir: frontend
