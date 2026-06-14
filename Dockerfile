@@ -13,17 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
-COPY requirements.txt /app/
+COPY backend/requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend project files
-COPY . /app/
+# Copy backend files
+COPY backend/ /app/
 
-# Run migrations and collect static files on container start/build
+# Run migrations and collect static files
 RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
-# Expose port 7860 (the standard port required by Hugging Face Spaces)
+# Expose port 7860 (Hugging Face Spaces default port)
 EXPOSE 7860
 
 # Start server using gunicorn on port 7860
