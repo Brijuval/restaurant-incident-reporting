@@ -148,6 +148,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True  # In production, restrict this to specific origins
 
+# CSRF Trusted Origins for Hugging Face Spaces and local development
+CSRF_TRUSTED_ORIGINS = [
+    'https://briju-incident-backend.hf.space',
+    'https://*.hf.space',
+    'https://*.huggingface.co',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': None,  # Disable pagination for simplicity, load all incidents
