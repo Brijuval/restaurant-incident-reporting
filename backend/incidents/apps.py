@@ -23,3 +23,13 @@ class IncidentsConfig(AppConfig):
                 print("To enable AI, create a .env file at the project root with:")
                 print("GROQ_API_KEY=your_groq_api_key_here")
             print("="*60 + "\n")
+
+            # Programmatically create superuser for cloud environment
+            try:
+                from django.contrib.auth.models import User
+                if not User.objects.filter(username='admin').exists():
+                    User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
+                    print("[ADMIN] Superuser 'admin' created successfully with password 'adminpass'.")
+            except Exception as e:
+                # Silently catch database-not-ready errors during migrations
+                pass
