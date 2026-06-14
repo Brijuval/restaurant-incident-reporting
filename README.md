@@ -1,3 +1,12 @@
+---
+title: Restaurant Incident Reporting Backend
+emoji: 🚨
+colorFrom: red
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # CrispyBites Ops - Restaurant Incident Reporting Tool
 
 CrispyBites Ops is a modern, high-fidelity, web-based Incident Reporting Tool designed for store staff to log operational issues (POS failures, food shortages, customer complaints) and managers/admins to triage, review, and resolve them.
