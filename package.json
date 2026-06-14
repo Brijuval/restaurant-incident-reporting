@@ -1,0 +1,15 @@
+{
+  "name": "restaurant-incident-reporting",
+  "version": "1.0.0",
+  "description": "Restaurant Incident Reporting Tool built with Django and React",
+  "scripts": {
+    "dev-backend": "cd backend && .\\venv\\Scripts\\python manage.py runserver 0.0.0.0:8000",
+    "dev-frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm:dev-backend\" \"npm:dev-frontend\"",
+    "install-frontend": "npm install --prefix frontend",
+    "install-all": "npm install && npm run install-frontend"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

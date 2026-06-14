@@ -1,0 +1,31 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Django local files
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+.env
+
+# Node/React
+node_modules/
+dist/
+dist-ssr
+*.local
+.eslintcache
+
+# OS/IDE Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
