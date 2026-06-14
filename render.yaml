@@ -27,7 +27,7 @@ services:
     name: incident-reporting-frontend
     runtime: static
     buildCommand: "npm install && npm run build"
-    publishDir: dist
+    publishPath: dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
