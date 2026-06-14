@@ -130,7 +130,7 @@ The suite runs 5 tests verifying model creation, input validations (e.g. empty s
 ## 🌐 Deployed Application URLs
 
 - **Backend API (Hugging Face Spaces)**: [https://briju-incident-backend.hf.space](https://briju-incident-backend.hf.space)
-- **Frontend App (Vercel)**: [Insert your deployed Vercel URL here]
+- **Frontend App (Vercel)**: [https://restaurant-incident-reporting.vercel.app/]
 
 ---
 
@@ -145,7 +145,7 @@ This project is configured for a completely free hosting stack (no credit card r
 2. Push your code to the Hugging Face Space git repository. The repository contains a root [Dockerfile](file:///C:/Users/Brija/.gemini/antigravity/scratch/restaurant-incident-reporting/Dockerfile) and Hugging Face metadata headers in this README, which automates the build.
 3. In the Space **Settings** page:
    - Under **Variables and secrets**, add a new Secret with Key: `GROQ_API_KEY` and Value: *[Your Groq API Key]*.
-   - Django runs on SQLite inside the Docker container by default. If you prefer persistent cloud storage, you can add a `DATABASE_URL` environment variable linking to a free PostgreSQL database (e.g. Supabase).
+   - Django runs on SQLite inside the Docker container by default. If you prefer persistent cloud storage, you can add a `DATABASE_URL` environment variable linking to a free PostgreSQL database (e.g., Supabase).
 
 ### 2. Frontend Deployment (Vercel)
 1. Create a new Project on Vercel and import your GitHub repository.
